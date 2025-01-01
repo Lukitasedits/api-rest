@@ -2,6 +2,7 @@ package com.lukitasedits.api_rest.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.lukitasedits.api_rest.models.Percentage;
@@ -18,8 +19,8 @@ public class ApiRestController {
     @Autowired
     private PercentageService percentageService;
 
-    @GetMapping(path="/{num1},{num2}")
-    public Float getPercentage(@PathVariable("num1") Float num1, @PathVariable("num2") Float num2) {
+    @GetMapping()
+    public Float getPercentage(@RequestParam("num1") Float num1, @RequestParam("num2") Float num2) {
         Integer percentage = percentageService.getRandomPercentage();
         return percentageService.sumAndAddPercentage(num1, num2, percentage);
     }
