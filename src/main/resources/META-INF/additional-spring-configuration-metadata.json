@@ -1,0 +1,12 @@
+{"properties": [
+  {
+    "name": "spring.external.service.base-url",
+    "type": "java.lang.String",
+    "description": "Url to connect with external micro-service."
+  },
+  {
+    "name": "spring.external.service.key",
+    "type": "java.lang.String",
+    "description": "Key to access to percentage API"
+  }
+]}
