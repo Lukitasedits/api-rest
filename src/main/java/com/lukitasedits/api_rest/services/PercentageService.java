@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.lukitasedits.api_rest.exceptions.EmptyResponseException;
 import com.lukitasedits.api_rest.models.Percentage;
 
 @Service
@@ -24,18 +25,21 @@ public class PercentageService {
     @Value("${spring.external.service.key}")
     private String percentageAPIEndKey;
 
+    @SuppressWarnings("null")
     @Cacheable("percentage")
    public Integer getRandomPercentage() {
         HttpHeaders headers = new HttpHeaders();
         headers.set("x-api-key", percentageAPIEndKey);
-
+        
         HttpEntity<String> entity = new HttpEntity<>(headers);
-
+        
         ResponseEntity<Percentage> response = restTemplate.exchange(percentageAPIEndPoint, HttpMethod.GET, entity, Percentage.class);
-
+        
         Integer percentageVal = 0;
-        if (response.getStatusCode().is2xxSuccessful() && response.hasBody()) {
+        if (response.hasBody() && response.getBody().getValue() != null) {
             percentageVal = response.getBody().getValue();
+        } else {
+            throw new EmptyResponseException("Service response is empty.");
         }
         return percentageVal;
     }
