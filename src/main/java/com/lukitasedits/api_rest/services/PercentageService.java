@@ -2,14 +2,18 @@ package com.lukitasedits.api_rest.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Recover;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 
+import com.lukitasedits.api_rest.exceptions.EmptyParamException;
 import com.lukitasedits.api_rest.exceptions.EmptyResponseException;
 import com.lukitasedits.api_rest.models.Percentage;
 
@@ -25,9 +29,14 @@ public class PercentageService {
     @Value("${spring.external.service.key}")
     private String percentageAPIEndKey;
 
+    @Autowired
+    private RedisService redisService;
+
+    private int intento = 1;
+
     @SuppressWarnings("null")
-    @Cacheable("percentage")
-   public Integer getRandomPercentage() {
+    @Retryable(value = RuntimeException.class, maxAttempts = 3, backoff = @Backoff(delay = 10000))
+    public Integer getRandomPercentage() {
         HttpHeaders headers = new HttpHeaders();
         headers.set("x-api-key", percentageAPIEndKey);
         
@@ -38,13 +47,26 @@ public class PercentageService {
         Integer percentageVal = 0;
         if (response.hasBody() && response.getBody().getValue() != null) {
             percentageVal = response.getBody().getValue();
+            redisService.setKey("percentage", percentageVal, 30*60);
         } else {
-            throw new EmptyResponseException("Service response is empty.");
+            throw new EmptyResponseException("No data available.");
         }
         return percentageVal;
     }
 
+    @Recover
+    public Integer tryCache(Exception e){
+        Integer percentajeVal = (Integer) redisService.getKey("percentage");
+        if (percentajeVal == null) {
+            throw new EmptyResponseException("No data available.");
+        }
+        return percentajeVal;
+    }
+
     public Float sumAndAddPercentage(Float num1, Float num2, Integer percentage) {
+        if (num1 == null || num2 == null || percentage == null) {
+            throw new EmptyParamException("One or more params are empty.");
+        } 
         return (num1 + num2) * (100 + percentage) / 100;
     }
 }
