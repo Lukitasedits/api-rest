@@ -10,7 +10,6 @@ import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 
 import com.lukitasedits.api_rest.exceptions.EmptyParamException;
@@ -31,8 +30,6 @@ public class PercentageService {
 
     @Autowired
     private RedisService redisService;
-
-    private int intento = 1;
 
     @SuppressWarnings("null")
     @Retryable(value = RuntimeException.class, maxAttempts = 3, backoff = @Backoff(delay = 10000))
@@ -56,11 +53,11 @@ public class PercentageService {
 
     @Recover
     public Integer tryCache(Exception e){
-        Integer percentajeVal = (Integer) redisService.getKey("percentage");
-        if (percentajeVal == null) {
+        Integer percentageVal = (Integer) redisService.getKey("percentage");
+        if (percentageVal == null) {
             throw new EmptyResponseException("No data available.");
         }
-        return percentajeVal;
+        return percentageVal;
     }
 
     public Float sumAndAddPercentage(Float num1, Float num2, Integer percentage) {

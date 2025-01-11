@@ -14,6 +14,6 @@ public class InterceptorsConfig  implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(requestLoggingInterceptor);
+        registry.addInterceptor(requestLoggingInterceptor).addPathPatterns("/api/percentage**");
     }
 }
