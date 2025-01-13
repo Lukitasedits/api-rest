@@ -1,7 +1,5 @@
 package com.lukitasedits.api_rest.controllers;
 
-import java.util.ArrayList;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -32,7 +30,7 @@ public class ApiRestController {
         Integer percentage = percentageService.getRandomPercentage();
         Float value = percentageService.sumAndAddPercentage(num1, num2, percentage);
 
-        ResponseEntity<Float> response = new ResponseEntity<>(value, HttpStatus.OK); 
+        ResponseEntity<Float> response = new ResponseEntity<>(value, HttpStatus.OK);
         requestLogService.updateResponse(response);
         return response;
     }

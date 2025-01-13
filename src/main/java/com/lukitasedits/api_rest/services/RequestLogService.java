@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.lukitasedits.api_rest.exceptions.EmptyResponseException;
@@ -30,6 +31,9 @@ public class RequestLogService {
     }
 
     public void openRequest (RequestLog requestLog) {
+        if (isRequestOpen()) {
+            throw new RuntimeException("Another request is opened");
+        }
         this.currentRequest  = requestLog;
     }
 
@@ -43,11 +47,11 @@ public class RequestLogService {
         }
     }
 
-    public RequestLog closeRequest() {
-        RequestLog newRequest = requestLogRepository.save(this.currentRequest);
+    @Async
+    public void closeRequest() {
+        requestLogRepository.save(this.currentRequest);
         this.cancelRequest();
-        return newRequest;
-    } 
+    }
 
     public void cancelRequest() {
         this.currentRequest = null;

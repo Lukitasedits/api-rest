@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.RestClientResponseException;
 
 import com.lukitasedits.api_rest.exceptions.EmptyResponseException;
+import com.lukitasedits.api_rest.exceptions.TooManyRequestException;
 import com.lukitasedits.api_rest.models.Error;
 import com.lukitasedits.api_rest.services.RequestLogService;
 
@@ -20,7 +21,6 @@ public class ControllerAdvice {
     private RequestLogService requestLogService;
 
     private ResponseEntity<Error> handleException(String message, HttpStatusCode status) {
-        System.out.println("handle exception...");
         Error error = Error.builder().message(message).build();
         ResponseEntity<Error> response = new ResponseEntity<>(error, status);
         try {

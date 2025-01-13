@@ -7,7 +7,6 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
 import com.lukitasedits.api_rest.models.RequestLog;
-import java.util.List;
 import java.util.Optional;
 
 
