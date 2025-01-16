@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.RestClientResponseException;
 
 import com.lukitasedits.api_rest.exceptions.EmptyResponseException;
-import com.lukitasedits.api_rest.exceptions.TooManyRequestException;
 import com.lukitasedits.api_rest.models.Error;
 import com.lukitasedits.api_rest.services.RequestLogService;
+import org.springframework.web.server.ResponseStatusException;
 
 
 @RestControllerAdvice
@@ -41,9 +41,9 @@ public class ControllerAdvice {
         return handleException(e.getMessage(), HttpStatus.BAD_GATEWAY);
     }
 
-    @ExceptionHandler(value = RestClientResponseException.class)
-    public ResponseEntity<Error> restClientResponseExceptionHandler(RestClientResponseException e) {
-        return handleException(e.getMessage(), e.getStatusCode());
+    @ExceptionHandler(value = ResponseStatusException.class)
+    public ResponseEntity<Error> responseStatusExceptionHandler(ResponseStatusException e) {
+        return handleException(e.getReason(), e.getStatusCode());
     }
 
     @ExceptionHandler(value = RuntimeException.class)

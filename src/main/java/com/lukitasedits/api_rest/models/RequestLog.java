@@ -1,6 +1,7 @@
 package com.lukitasedits.api_rest.models;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Map;
 
@@ -19,9 +20,9 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MapKeyColumn;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import jakarta.persistence.FetchType;
 
 @Data
 @Entity
@@ -40,11 +41,9 @@ public class RequestLog {
     private Long id;
 
     @Column(name = "request_time")
-    @NotNull
     private LocalDateTime requestTime;
 
     @Column()
-    @NotNull
     private String endpoint;
 
     @ElementCollection(fetch = FetchType.EAGER)
@@ -67,7 +66,6 @@ public class RequestLog {
                 response = Float.parseFloat(responseJson);
             } catch (NumberFormatException nfe) {
                 try {
-                    System.out.println("responseJson" + responseJson);
                     response = objectMapper.readValue(responseJson, new TypeReference<Error>() {});
                 } catch (IOException e) {
                     throw new RuntimeException("Error deserializing the response", e);

@@ -12,6 +12,7 @@ import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
 
+import com.lukitasedits.api_rest.controllers.WebFluxErrorController;
 import com.lukitasedits.api_rest.models.RequestLog;
 import com.lukitasedits.api_rest.services.RequestLogService;
 
@@ -22,6 +23,9 @@ public class RequestLogFilter implements WebFilter {
 
     @Autowired
     private RequestLogService requestLogService;
+
+    @Autowired
+    private WebFluxErrorController errorController;
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
@@ -35,11 +39,7 @@ public class RequestLogFilter implements WebFilter {
                         params.put(key, Float.parseFloat(value.get(0)));
                 });
             } catch (NumberFormatException e) {
-                exchange.getResponse().setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
-                DataBuffer buffer = exchange.getResponse()
-                    .bufferFactory()
-                    .wrap(e.getMessage().getBytes());
-                return exchange.getResponse().writeWith(Mono.just(buffer));
+                return errorController.handleException(exchange, HttpStatus.BAD_REQUEST, "Invalid parameter: " + e.getMessage());
             }
             RequestLog requestLog = new RequestLog(requestTime, endpoint, params);
             requestLogService.openRequest(requestLog);
