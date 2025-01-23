@@ -43,7 +43,7 @@ public class RateLimitFilterTest {
     }
 
     @Test
-    public void testDoFilterInternal() throws RuntimeException, IOException, ServletException {
+    public void doFilterInternalTest() throws RuntimeException, IOException, ServletException {
         rateLimitFilter.doFilterInternal(request, response, filterChain);
         verify(rateLimiterService).tryConsume(1L);
         verify(filterChain).doFilter(request, response);

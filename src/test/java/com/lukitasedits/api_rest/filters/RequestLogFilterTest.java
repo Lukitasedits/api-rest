@@ -54,7 +54,7 @@ public class RequestLogFilterTest {
     
     
     @Test
-    public void testDoFilterInternal_withValidParams() throws IOException, ServletException {
+    public void doFilterInternalTest_withValidParams() throws IOException, ServletException {
         
         when(request.getServletPath()).thenReturn("/api/percentage");
         when(request.getRequestURL()).thenReturn(new StringBuffer("https://lukitasedits.com/api/percentage"));
@@ -68,7 +68,7 @@ public class RequestLogFilterTest {
     }
 
     @Test
-    public void testDoFilterInternal_withInvalidParams() throws IOException, ServletException {
+    public void doFilterInternalTest_withInvalidParams() throws IOException, ServletException {
         when(request.getServletPath()).thenReturn("/api/percentage");
         when(request.getRequestURL()).thenReturn(new StringBuffer("https://lukitasedits.com/api/percentage"));
         when(request.getParameterMap()).thenReturn(Map.of("param1", new String[]{"invalid value"}));
@@ -83,7 +83,7 @@ public class RequestLogFilterTest {
     }
 
     @Test
-    public void testDoFilterInternal_withNonTargetPath() throws IOException, ServletException {
+    public void doFilterInternalTest_withNonTargetPath() throws IOException, ServletException {
         when(request.getServletPath()).thenReturn("/api/other");
 
         requestLogFilter.doFilterInternal(request, response, filterChain);

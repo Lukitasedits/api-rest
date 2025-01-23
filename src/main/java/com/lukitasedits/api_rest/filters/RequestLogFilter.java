@@ -32,7 +32,7 @@ public class RequestLogFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws RuntimeException, IOException, ServletException {
 
-        String path = request.getServletPath();
+        String path = request.getPathInfo();
         if (path != null && path.startsWith(TARGET_PATH)) {
             LocalDateTime requestTime = LocalDateTime.now();
             String endpoint = request.getRequestURL().toString();

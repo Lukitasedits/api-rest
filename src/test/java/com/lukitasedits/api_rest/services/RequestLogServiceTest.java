@@ -75,7 +75,7 @@ public class RequestLogServiceTest {
     }
 
     @Test
-    public void cancelRequesttWorkflowTest(){
+    public void cancelRequestWorkflowTest(){
         RequestLog log = new RequestLog();
         requestLogService.openRequest(log);
         assertEquals(true, requestLogService.isRequestOpen());

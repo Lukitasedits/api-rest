@@ -35,7 +35,7 @@ public class PercentageServiceTest {
     private RedisService redisService;
 
     @Test
-    void testGetRandomPercentage_Success() {
+    void getRandomPercentageTest_Success() {
         when(restTemplate.exchange(Mockito.anyString(), Mockito.any(), Mockito.any(), Mockito.eq(Percentage.class)))
         .thenReturn(new ResponseEntity<Percentage>(new Percentage(23), HttpStatus.OK));
         
@@ -45,7 +45,7 @@ public class PercentageServiceTest {
     }
 
     @Test
-    void testGetRandomPercentage_ExternalServiceFailure() {
+    void getRandomPercentageTest_ExternalServiceFailure() {
         when(restTemplate.exchange(Mockito.anyString(), Mockito.any(), Mockito.any(), Mockito.eq(Percentage.class)))
         .thenThrow(new RuntimeException("Test exception"));
         assertThrowsExactly(RuntimeException.class,() -> {
@@ -54,7 +54,7 @@ public class PercentageServiceTest {
     }
 
     @Test
-    void testGetRandomPercentage_ExternalServiceEmptyResponse() {
+    void getRandomPercentageTest_ExternalServiceEmptyResponse() {
         when(restTemplate.exchange(Mockito.anyString(), Mockito.any(), Mockito.any(), Mockito.eq(Percentage.class)))
         .thenReturn(new ResponseEntity<>(new Percentage(null), HttpStatus.NO_CONTENT));
         
@@ -64,14 +64,14 @@ public class PercentageServiceTest {
     }
     
     @Test
-    void testTryCache_Success() throws IOException {
+    void tryCacheTest_Success() throws IOException {
         when(redisService.getKey("percentage")).thenReturn(55);
         Integer percentageFromCache = percentageService.tryCache(new RuntimeException());
         assertEquals(55, percentageFromCache.intValue());
     }
 
     @Test
-    void testTryCache_EmptyResponse() throws IOException {
+    void tryCacheTest_EmptyResponse() throws IOException {
         when(redisService.getKey("percentage")).thenReturn(null);
 
         assertThrowsExactly(ExternalException.class,() -> {
@@ -80,7 +80,7 @@ public class PercentageServiceTest {
     }
 
     @Test
-    void testTryCache_Failure() throws IOException {
+    void tryCacheTest_Failure() throws IOException {
         when(redisService.getKey("percentage")).thenThrow(new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR));
 
         assertThrowsExactly(ExternalException.class,() -> {
@@ -89,7 +89,7 @@ public class PercentageServiceTest {
     }
 
     @Test
-    void testSumAndAddPercentage() {
+    void sumAndAddPercentageTest() {
         Float result = percentageService.sumAndAddPercentage(32.1f, 45.12f, 50);
         //32.1 + 45.12 + 50% = 77.22 + 38.61 = 115.83
         assertEquals(115.83f, result.floatValue(), 0.001);
