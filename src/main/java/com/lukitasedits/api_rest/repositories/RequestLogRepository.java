@@ -13,7 +13,7 @@ import java.util.Optional;
 @Repository
 public interface RequestLogRepository extends PagingAndSortingRepository<RequestLog, Long> {
 
-    // @Query("SELECT r FROM RequestLog r") //TODO: ver si funciona sin esto
+    @Query("SELECT r FROM RequestLog r")
     Page<RequestLog> getRequestLogs(Pageable pageable);
 
     RequestLog save(RequestLog requestLog);

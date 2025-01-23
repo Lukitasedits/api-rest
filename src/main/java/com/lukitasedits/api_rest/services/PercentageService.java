@@ -44,11 +44,11 @@ public class PercentageService {
     public Integer getRandomPercentage() {
         try {
             HttpHeaders headers = new HttpHeaders();
-            headers.set("x-api-key", "be921c4046a24ef6921c239bca55e4d9");
+            headers.set("x-api-key",percentageAPIEndKey);
             
             HttpEntity<String> entity = new HttpEntity<>(headers);
 
-            ResponseEntity<Percentage> response = restTemplate.exchange("https://api.mockapi.com/api/v1/percentage", HttpMethod.GET, entity, Percentage.class);
+            ResponseEntity<Percentage> response = restTemplate.exchange(percentageAPIEndPoint, HttpMethod.GET, entity, Percentage.class);
             Integer percentageVal = 0;
             if (response.hasBody() && response.getBody().getValue() != null) {
                 percentageVal = response.getBody().getValue();
