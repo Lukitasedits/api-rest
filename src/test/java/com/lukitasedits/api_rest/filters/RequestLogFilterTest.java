@@ -44,6 +44,8 @@ public class RequestLogFilterTest {
 
     final String PATH = "/api/percentage";
 
+    final String URL = "https://lukitasedits.com/api/percentage";
+
     @Autowired
     private Environment environment;
 
@@ -56,8 +58,8 @@ public class RequestLogFilterTest {
     @Test
     public void doFilterInternalTest_withValidParams() throws IOException, ServletException {
         
-        when(request.getServletPath()).thenReturn("/api/percentage");
-        when(request.getRequestURL()).thenReturn(new StringBuffer("https://lukitasedits.com/api/percentage"));
+        when(request.getServletPath()).thenReturn(PATH);
+        when(request.getRequestURL()).thenReturn(new StringBuffer(URL));
         when(request.getParameterMap()).thenReturn(Map.of("param1", new String[]{"1.0"}));
 
         requestLogFilter.doFilterInternal(request, response, filterChain);
@@ -69,8 +71,8 @@ public class RequestLogFilterTest {
 
     @Test
     public void doFilterInternalTest_withInvalidParams() throws IOException, ServletException {
-        when(request.getServletPath()).thenReturn("/api/percentage");
-        when(request.getRequestURL()).thenReturn(new StringBuffer("https://lukitasedits.com/api/percentage"));
+        when(request.getServletPath()).thenReturn(PATH);
+        when(request.getRequestURL()).thenReturn(new StringBuffer(URL));
         when(request.getParameterMap()).thenReturn(Map.of("param1", new String[]{"invalid value"}));
 
         assertThrowsExactly(BadParamException.class, () -> {
