@@ -32,7 +32,7 @@ public class RequestLogService {
 
     public void openRequest (RequestLog requestLog) {
         if (isRequestOpen()) {
-            throw new RuntimeException("Another request is opened");
+            throw new RuntimeException("Another request is open");
         }
         this.currentRequest  = requestLog;
     }

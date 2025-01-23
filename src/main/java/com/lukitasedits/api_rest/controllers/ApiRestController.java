@@ -13,6 +13,7 @@ import com.lukitasedits.api_rest.services.PercentageService;
 import com.lukitasedits.api_rest.services.RequestLogService;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 
 
 @RestController
@@ -25,7 +26,7 @@ public class ApiRestController {
     @Autowired
     private RequestLogService requestLogService;
 
-    @GetMapping("/percentage")
+    @PostMapping("/percentage")
     public ResponseEntity<Float> getPercentage(@RequestParam("num1") Float num1, @RequestParam("num2") Float num2) {
         Integer percentage = percentageService.getRandomPercentage();
         Float value = percentageService.sumAndAddPercentage(num1, num2, percentage);

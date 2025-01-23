@@ -1,33 +1,31 @@
 package com.lukitasedits.api_rest.filters;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.buffer.DataBuffer;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Component;
-import org.springframework.web.server.ServerWebExchange;
-import org.springframework.web.server.WebFilter;
-import org.springframework.web.server.WebFilterChain;
+import java.io.IOException;
 
-import com.lukitasedits.api_rest.controllers.WebFluxErrorController;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import com.lukitasedits.api_rest.exceptions.TooManyRequestException;
 import com.lukitasedits.api_rest.services.RateLimiterService;
 
-import reactor.core.publisher.Mono;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Component
-public class RateLimitFilter implements WebFilter {
-    
+@Order(2)
+public class RateLimitFilter extends OncePerRequestFilter {
+
     @Autowired
     private RateLimiterService rateLimiterService;
 
-    @Autowired
-    private WebFluxErrorController errorController;
-
-   public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
-    try {
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+    throws RuntimeException, IOException, ServletException {
         rateLimiterService.tryConsume(1L);
-        return chain.filter(exchange);
-    } catch (Exception e) {
-        return errorController.handleException(exchange, HttpStatus.TOO_MANY_REQUESTS, "Rate limit exceeded: " + e.getMessage());
+        filterChain.doFilter(request, response);
     }
-}
 }

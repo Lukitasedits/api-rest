@@ -1,19 +1,30 @@
 package com.lukitasedits.api_rest.services;
 
+import java.io.IOException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.lukitasedits.api_rest.exceptions.EmptyParamException;
 import com.lukitasedits.api_rest.exceptions.EmptyResponseException;
+import com.lukitasedits.api_rest.exceptions.ExternalException;
 import com.lukitasedits.api_rest.models.Percentage;
 
+
 @Service
+@EnableRetry
 public class PercentageService {
 
     @Value("${spring.external.service.base-url}")
@@ -24,45 +35,50 @@ public class PercentageService {
 
     @Autowired
     private RedisService redisService;
-
+    
     @Autowired
-    private WebClient webClient;
+    private RestTemplate restTemplate;
 
-    @SuppressWarnings("null")
+    // @SuppressWarnings("null")
     @Retryable(value = RuntimeException.class, maxAttempts = 3, backoff = @Backoff(delay = 10000))
     public Integer getRandomPercentage() {
         try {
-            Integer percentageVal = webClient.get()
-                    .uri(percentageAPIEndPoint)
-                    .header("x-api-key", percentageAPIEndKey)
-                    .retrieve()
-                    .bodyToMono(Percentage.class)
-                    .map(response -> {
-                        if (response.getValue() == null) {
-                            throw new EmptyResponseException("No data available.");
-                        }
-                        return response.getValue();
-                    })
-                    .block();
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("x-api-key", "be921c4046a24ef6921c239bca55e4d9");
+            
+            HttpEntity<String> entity = new HttpEntity<>(headers);
 
-            redisService.setKey("percentage", percentageVal, 30 * 60);
-
+            ResponseEntity<Percentage> response = restTemplate.exchange("https://api.mockapi.com/api/v1/percentage", HttpMethod.GET, entity, Percentage.class);
+            Integer percentageVal = 0;
+            if (response.hasBody() && response.getBody().getValue() != null) {
+                percentageVal = response.getBody().getValue();
+                redisService.setKey("percentage", percentageVal, 30*60);
+            } else {
+                throw new EmptyResponseException("No data available.");
+            }
             return percentageVal;
-
-        } catch (WebClientResponseException e) {
-            throw new RuntimeException("Error calling percentage API: " + e.getMessage(), e);
+        } catch (ResponseStatusException e) {
+            throw new ResponseStatusException(e.getStatusCode(), "Error calling percentage API: " + e.getMessage(), e);
+        } catch (EmptyResponseException e) {
+            throw new EmptyResponseException(e.getMessage());
         } catch (Exception e) {
             throw new RuntimeException("Unexpected error: " + e.getMessage(), e);
         }
     }
 
     @Recover
-    public Integer tryCache(Exception e){
-        Integer percentageVal = (Integer) redisService.getKey("percentage");
-        if (percentageVal == null) {
-            throw new EmptyResponseException("No data available.");
+    public Integer tryCache(RuntimeException e) throws IOException{
+        try {
+            Integer percentageVal = (Integer) redisService.getKey("percentage");
+            if (percentageVal == null) {
+                throw new EmptyResponseException("No data available");
+            }
+            return percentageVal;
+        } catch (EmptyResponseException ex) {
+            throw new ExternalException(ex.getMessage(), HttpStatus.BAD_GATEWAY);
+        } catch (Exception ex) {
+            throw new ExternalException(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return percentageVal;
     }
 
     public Float sumAndAddPercentage(Float num1, Float num2, Integer percentage) {

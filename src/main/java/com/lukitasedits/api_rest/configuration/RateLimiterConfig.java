@@ -17,7 +17,7 @@ public class RateLimiterConfig {
 
 	@PostConstruct
 	public void initRateLimit() {
-		rateLimiterService.initRateLimitBucket(3l, 3l, Duration.ofMinutes(1));
+		rateLimiterService.initRateLimitBucket(3, 3, Duration.ofMinutes(1));
     }
 
 }

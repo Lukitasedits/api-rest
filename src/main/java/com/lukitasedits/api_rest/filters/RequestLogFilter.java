@@ -1,54 +1,64 @@
 package com.lukitasedits.api_rest.filters;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.springframework.web.server.ServerWebExchange;
-import org.springframework.web.server.WebFilter;
-import org.springframework.web.server.WebFilterChain;
+import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.lukitasedits.api_rest.controllers.WebFluxErrorController;
+import com.lukitasedits.api_rest.exceptions.BadParamException;
 import com.lukitasedits.api_rest.models.RequestLog;
 import com.lukitasedits.api_rest.services.RequestLogService;
 
-import reactor.core.publisher.Mono;
-
 @Component
-public class RequestLogFilter implements WebFilter {
+@Order(3)
+public class RequestLogFilter extends OncePerRequestFilter {
 
     @Autowired
     private RequestLogService requestLogService;
 
-    @Autowired
-    private WebFluxErrorController errorController;
+    private static final String TARGET_PATH = "/api/percentage";
 
     @Override
-    public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
-        String path = exchange.getRequest().getPath().value();
-        if (path.startsWith("/api/percentage")) {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws RuntimeException, IOException, ServletException {
+
+        String path = request.getServletPath();
+        if (path != null && path.startsWith(TARGET_PATH)) {
             LocalDateTime requestTime = LocalDateTime.now();
-            String endpoint = exchange.getRequest().getURI().toString();
+            String endpoint = request.getRequestURL().toString();
             Map<String, Float> params = new HashMap<>();
+
             try {
-                exchange.getRequest().getQueryParams().forEach((key, value) -> {
-                        params.put(key, Float.parseFloat(value.get(0)));
+                request.getParameterMap().forEach((key, values) -> {
+                    if (values.length > 0) {
+                        params.put(key, Float.parseFloat(values[0]));
+                    }
                 });
             } catch (NumberFormatException e) {
-                return errorController.handleException(exchange, HttpStatus.BAD_REQUEST, "Invalid parameter: " + e.getMessage());
+                throw new BadParamException("Invalid parameter: " + e.getMessage());
             }
+            
             RequestLog requestLog = new RequestLog(requestTime, endpoint, params);
             requestLogService.openRequest(requestLog);
-            
-            return chain.filter(exchange).doOnTerminate(() -> {
-                requestLogService.closeRequest();
-            });
-        }
 
-        return chain.filter(exchange);
+            try {
+                filterChain.doFilter(request, response);
+            } finally {
+                requestLogService.closeRequest();
+            }
+
+        } else {
+            filterChain.doFilter(request, response);
+        }
     }
 }

@@ -10,5 +10,9 @@ import lombok.extern.jackson.Jacksonized;
 @Builder
 @Jacksonized
 public class Error implements Serializable {
-    private String message;
+    private String error;
+
+    public String toString(){
+        return "{\"error\": \"" + this.error.replace("\"", "\\\"") + "\"}";
+    }
 }
