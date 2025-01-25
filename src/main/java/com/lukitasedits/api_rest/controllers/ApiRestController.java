@@ -8,7 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.lukitasedits.api_rest.models.RequestLog;
+import com.lukitasedits.api_rest.dto.RequestLogDTO;
+import com.lukitasedits.api_rest.entities.RequestLog;
 import com.lukitasedits.api_rest.services.PercentageService;
 import com.lukitasedits.api_rest.services.RequestLogService;
 
@@ -37,7 +38,7 @@ public class ApiRestController {
     }
 
     @GetMapping("/log")
-    public ResponseEntity<Page<RequestLog>> getRequestLogs(@RequestParam("page") Integer page, @RequestParam("size") Integer size) {
+    public ResponseEntity<Page<RequestLogDTO>> getRequestLogs(@RequestParam("page") Integer page, @RequestParam("size") Integer size) {
         return new ResponseEntity<>(requestLogService.getRequestLogs(page, size), HttpStatus.OK);
     }
     

@@ -18,8 +18,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.lukitasedits.api_rest.entities.RequestLog;
 import com.lukitasedits.api_rest.exceptions.BadParamException;
-import com.lukitasedits.api_rest.models.RequestLog;
 import com.lukitasedits.api_rest.services.RequestLogService;
 
 @Component

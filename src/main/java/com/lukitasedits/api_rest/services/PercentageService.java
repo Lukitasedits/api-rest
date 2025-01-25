@@ -17,10 +17,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.lukitasedits.api_rest.dto.PercentageDTO;
 import com.lukitasedits.api_rest.exceptions.EmptyParamException;
 import com.lukitasedits.api_rest.exceptions.EmptyResponseException;
 import com.lukitasedits.api_rest.exceptions.ExternalException;
-import com.lukitasedits.api_rest.models.Percentage;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,7 +43,7 @@ public class PercentageService {
     public Integer getRandomPercentage() {
         try {
             log.info("Calling external service: " + percentageAPIEndPoint);
-            ResponseEntity<Percentage> response = restTemplate.getForEntity(percentageAPIEndPoint, Percentage.class);
+            ResponseEntity<PercentageDTO> response = restTemplate.getForEntity(percentageAPIEndPoint, PercentageDTO.class);
             Integer percentageVal = 0;
             if (response.hasBody() && response.getBody().getValue() != null) {
                 percentageVal = response.getBody().getValue();

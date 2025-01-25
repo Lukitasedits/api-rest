@@ -12,7 +12,6 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 
-import org.aspectj.lang.annotation.After;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,8 +38,8 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.lukitasedits.api_rest.ApiRestApplication;
-import com.lukitasedits.api_rest.models.Percentage;
-import com.lukitasedits.api_rest.models.RequestLog;
+import com.lukitasedits.api_rest.dto.PercentageDTO;
+import com.lukitasedits.api_rest.entities.RequestLog;
 import com.lukitasedits.api_rest.repositories.RequestLogRepository;
 import com.lukitasedits.api_rest.services.RateLimiterService;
 import com.lukitasedits.api_rest.services.RedisService;
@@ -119,8 +118,8 @@ class ApiRestControllerTest {
     @Test
     void getPercentageTest() throws Exception {
         assertTrue(true);
-        when(restTemplate.getForEntity(Mockito.nullable(String.class), Mockito.eq(Percentage.class)))
-        .thenReturn(new ResponseEntity<Percentage>(new Percentage(23), HttpStatus.OK));
+        when(restTemplate.getForEntity(Mockito.nullable(String.class), Mockito.eq(PercentageDTO.class)))
+        .thenReturn(new ResponseEntity<PercentageDTO>(new PercentageDTO(23), HttpStatus.OK));
         
         mockMvc.perform(post("/api/percentage")
                 .param("num1", "10.0")
@@ -132,7 +131,7 @@ class ApiRestControllerTest {
 
     @Test
     void getPercentageRetryTest() throws Exception {
-        when(restTemplate.getForEntity(Mockito.nullable(String.class), Mockito.eq(Percentage.class)))
+        when(restTemplate.getForEntity(Mockito.nullable(String.class), Mockito.eq(PercentageDTO.class)))
         .thenThrow(RuntimeException.class);
         when(redisService.getKey("percentage")).thenReturn(23);
         
@@ -164,8 +163,8 @@ class ApiRestControllerTest {
 
     @Test
     void rateLimitTest() throws Exception {
-        when(restTemplate.getForEntity(Mockito.nullable(String.class), Mockito.eq(Percentage.class)))
-        .thenReturn(new ResponseEntity<Percentage>(new Percentage(23), HttpStatus.OK));
+        when(restTemplate.getForEntity(Mockito.nullable(String.class), Mockito.eq(PercentageDTO.class)))
+        .thenReturn(new ResponseEntity<PercentageDTO>(new PercentageDTO(23), HttpStatus.OK));
         
         for (int i = 0; i < 3; i++) {
             mockMvc.perform(post("/api/percentage")

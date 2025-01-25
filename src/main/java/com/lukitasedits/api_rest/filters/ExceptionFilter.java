@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.lukitasedits.api_rest.dto.ErrorDTO;
 import com.lukitasedits.api_rest.exceptions.BadParamException;
 import com.lukitasedits.api_rest.exceptions.EmptyResponseException;
 import com.lukitasedits.api_rest.exceptions.TooManyRequestException;
@@ -22,8 +23,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import com.lukitasedits.api_rest.models.Error;
 
 @Component
 @Order(1)
@@ -52,7 +51,7 @@ public class ExceptionFilter extends OncePerRequestFilter {
     }
 
     private void handleException(HttpServletResponse response, String message, HttpStatusCode status) throws IOException {
-        Error error = Error.builder().error(message).build();
+        ErrorDTO error = ErrorDTO.builder().error(message).build();
         try {
             if (requestLogService.isRequestOpen()) {
                 requestLogService.updateResponse(new ResponseEntity<>(error, status));

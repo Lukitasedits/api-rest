@@ -20,10 +20,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.data.domain.PageRequest;
 
+import com.lukitasedits.api_rest.dto.ErrorDTO;
+import com.lukitasedits.api_rest.dto.RequestLogDTO;
+import com.lukitasedits.api_rest.entities.RequestLog;
 import com.lukitasedits.api_rest.exceptions.EmptyResponseException;
-import com.lukitasedits.api_rest.models.Error;
+
 import org.springframework.http.HttpStatus;
-import com.lukitasedits.api_rest.models.RequestLog;
+
 import com.lukitasedits.api_rest.repositories.RequestLogRepository;
 import org.junit.jupiter.api.Test;
 
@@ -46,10 +49,18 @@ public class RequestLogServiceTest {
         Pageable pageable = PageRequest.of(0, 2);
         when(requestLogRepository.getRequestLogs(pageable)).thenReturn(pageLogs);
 
-        Page<RequestLog> result = requestLogService.getRequestLogs(0, 2);
+        Page<RequestLogDTO> result = requestLogService.getRequestLogs(0, 2);
 
         assertEquals(2, result.getTotalElements());
-        assertEquals(logs, result.getContent());
+        List<RequestLogDTO> content = result.getContent();
+        pageLogs.forEach(log -> {
+            RequestLogDTO requestLog = content.get(logs.indexOf(log));
+            assertEquals(log.getId(), requestLog.getId());
+            assertEquals(log.getRequestTime(), requestLog.getRequestTime());
+            assertEquals(log.getEndpoint(), requestLog.getEndpoint());
+            assertEquals(log.getParams(), requestLog.getParams());
+            assertEquals(log.getResponse(), requestLog.getResponse());
+        });
     }
 
     @Test
@@ -94,7 +105,7 @@ public class RequestLogServiceTest {
     @Test
     public void updateErrorResponseTest(){
         RequestLog log = new RequestLog();
-        ResponseEntity<Error> response = new ResponseEntity<>(Error.builder().error("test").build(), HttpStatus.BAD_REQUEST);
+        ResponseEntity<ErrorDTO> response = new ResponseEntity<>(ErrorDTO.builder().error("test").build(), HttpStatus.BAD_REQUEST);
         requestLogService.openRequest(log);
         assertEquals(true, requestLogService.isRequestOpen());
         requestLogService.updateResponse(response);

@@ -13,18 +13,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.lukitasedits.api_rest.ApiRestApplication;
+import com.lukitasedits.api_rest.dto.PercentageDTO;
 import com.lukitasedits.api_rest.exceptions.EmptyResponseException;
 import com.lukitasedits.api_rest.exceptions.ExternalException;
-import com.lukitasedits.api_rest.models.Percentage;
 @ExtendWith(MockitoExtension.class)
 @TestPropertySource(locations = "classpath:application-test.properties")
 public class PercentageServiceTest {
@@ -40,8 +37,8 @@ public class PercentageServiceTest {
 
     @Test
     void getRandomPercentageTest_Success() {
-        when(restTemplate.getForEntity(Mockito.nullable(String.class), Mockito.eq(Percentage.class)))
-        .thenReturn(new ResponseEntity<Percentage>(new Percentage(23), HttpStatus.OK));
+        when(restTemplate.getForEntity(Mockito.nullable(String.class), Mockito.eq(PercentageDTO.class)))
+        .thenReturn(new ResponseEntity<PercentageDTO>(new PercentageDTO(23), HttpStatus.OK));
         
         Integer percentage = percentageService.getRandomPercentage();
         assertEquals(23, percentage.intValue());
@@ -50,7 +47,7 @@ public class PercentageServiceTest {
 
     @Test
     void getRandomPercentageTest_ExternalServiceFailure() {
-        when(restTemplate.getForEntity(Mockito.nullable(String.class), Mockito.eq(Percentage.class)))
+        when(restTemplate.getForEntity(Mockito.nullable(String.class), Mockito.eq(PercentageDTO.class)))
         .thenThrow(new RuntimeException("Test exception"));
         assertThrowsExactly(RuntimeException.class,() -> {
             percentageService.getRandomPercentage();
@@ -59,8 +56,8 @@ public class PercentageServiceTest {
 
     @Test
     void getRandomPercentageTest_ExternalServiceEmptyResponse() {
-        when(restTemplate.getForEntity(Mockito.nullable(String.class), Mockito.eq(Percentage.class)))
-        .thenReturn(new ResponseEntity<>(new Percentage(null), HttpStatus.NO_CONTENT));
+        when(restTemplate.getForEntity(Mockito.nullable(String.class), Mockito.eq(PercentageDTO.class)))
+        .thenReturn(new ResponseEntity<>(new PercentageDTO(null), HttpStatus.NO_CONTENT));
         
         assertThrowsExactly(EmptyResponseException.class,() -> {
             percentageService.getRandomPercentage();

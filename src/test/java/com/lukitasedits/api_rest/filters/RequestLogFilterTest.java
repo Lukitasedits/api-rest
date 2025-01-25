@@ -20,8 +20,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 
+import com.lukitasedits.api_rest.entities.RequestLog;
 import com.lukitasedits.api_rest.exceptions.BadParamException;
-import com.lukitasedits.api_rest.models.RequestLog;
 import com.lukitasedits.api_rest.services.RequestLogService;
 
 @ExtendWith(MockitoExtension.class)

@@ -1,4 +1,4 @@
-package com.lukitasedits.api_rest.models;
+package com.lukitasedits.api_rest.dto;
 
 import java.io.Serializable;
 
@@ -7,6 +7,6 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class Percentage implements Serializable {
+public class PercentageDTO implements Serializable {
     private Integer value;
 }

@@ -7,9 +7,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import com.lukitasedits.api_rest.dto.ErrorDTO;
+import com.lukitasedits.api_rest.dto.RequestLogDTO;
+import com.lukitasedits.api_rest.entities.RequestLog;
 import com.lukitasedits.api_rest.exceptions.EmptyResponseException;
-import com.lukitasedits.api_rest.models.RequestLog;
-import com.lukitasedits.api_rest.models.Error;
 import com.lukitasedits.api_rest.repositories.RequestLogRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -28,9 +29,11 @@ public class RequestLogService {
         return currentRequest != null;
     }
 
-    public Page<RequestLog> getRequestLogs(Integer page, Integer size) {
+    public Page<RequestLogDTO> getRequestLogs(Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
-        return requestLogRepository.getRequestLogs(pageable);
+        Page<RequestLog> requestLogs = requestLogRepository.getRequestLogs(pageable);
+
+        return requestLogs.map(RequestLogDTO::fromEntity);
     }
 
     public void openRequest (RequestLog requestLog) {
@@ -45,7 +48,7 @@ public class RequestLogService {
         switch (body) {
             case null -> throw new EmptyResponseException("Response body is null");
             case Float floatBody -> this.currentRequest.setResponse(floatBody);
-            case Error errorBody -> this.currentRequest.setResponse(errorBody);
+            case ErrorDTO errorBody -> this.currentRequest.setResponse(errorBody);
             default -> throw new RuntimeException("Invalid response: " + body.getClass().getName());
         }
     }

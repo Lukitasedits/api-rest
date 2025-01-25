@@ -1,4 +1,4 @@
-package com.lukitasedits.api_rest.models;
+package com.lukitasedits.api_rest.entities;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -7,6 +7,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.lukitasedits.api_rest.dto.ErrorDTO;
 
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
@@ -66,7 +67,7 @@ public class RequestLog {
                 response = Float.parseFloat(responseJson);
             } catch (NumberFormatException nfe) {
                 try {
-                    response = objectMapper.readValue(responseJson, new TypeReference<Error>() {});
+                    response = objectMapper.readValue(responseJson, new TypeReference<ErrorDTO>() {});
                 } catch (IOException e) {
                     throw new RuntimeException("Error deserializing the response", e);
                 }

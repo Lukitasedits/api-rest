@@ -1,4 +1,4 @@
-package com.lukitasedits.api_rest.models;
+package com.lukitasedits.api_rest.dto;
 
 import java.io.Serializable;
 
@@ -9,7 +9,7 @@ import lombok.extern.jackson.Jacksonized;
 @Data
 @Builder
 @Jacksonized
-public class Error implements Serializable {
+public class ErrorDTO implements Serializable {
     private String error;
 
     public String toString(){
