@@ -37,11 +37,6 @@ public class RateLimitFilterTest {
     @Mock
     private FilterChain filterChain;
 
-    @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
-
     @Test
     public void doFilterInternalTest() throws RuntimeException, IOException, ServletException {
         rateLimitFilter.doFilterInternal(request, response, filterChain);

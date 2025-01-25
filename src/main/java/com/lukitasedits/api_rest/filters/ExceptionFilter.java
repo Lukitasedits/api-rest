@@ -20,11 +20,18 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import com.lukitasedits.api_rest.models.Error;
 
 @Component
 @Order(1)
+@Slf4j
+@RequiredArgsConstructor
 public class ExceptionFilter extends OncePerRequestFilter {
+
+    private final RequestLogService requestLogService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -44,14 +51,12 @@ public class ExceptionFilter extends OncePerRequestFilter {
         }
     }
 
-    @Autowired
-    private RequestLogService requestLogService;
-
     private void handleException(HttpServletResponse response, String message, HttpStatusCode status) throws IOException {
         Error error = Error.builder().error(message).build();
         try {
             if (requestLogService.isRequestOpen()) {
                 requestLogService.updateResponse(new ResponseEntity<>(error, status));
+                log.info("Closing by exception filter");
                 requestLogService.closeRequest();
             }
         } catch (Exception e) {

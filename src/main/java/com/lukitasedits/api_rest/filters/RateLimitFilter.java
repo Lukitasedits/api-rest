@@ -14,13 +14,14 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 
 @Component
 @Order(2)
+@RequiredArgsConstructor
 public class RateLimitFilter extends OncePerRequestFilter {
 
-    @Autowired
-    private RateLimiterService rateLimiterService;
+    private final RateLimiterService rateLimiterService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)

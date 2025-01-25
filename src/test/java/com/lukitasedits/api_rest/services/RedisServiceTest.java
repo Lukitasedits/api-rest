@@ -16,6 +16,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.junit.jupiter.api.Test;
 
 
@@ -27,10 +28,12 @@ public class RedisServiceTest {
 
     @Mock
     private RedisTemplate<String, Serializable> redisTemplate;
+
+    @Mock
+    private ValueOperations<String, Serializable> valueOperations;
+
     @BeforeEach
     public void setUp() {
-        MockitoAnnotations.openMocks(this);
-        ValueOperations<String, Serializable> valueOperations = Mockito.mock(ValueOperations.class);
         when(redisTemplate.opsForValue()).thenReturn(valueOperations);
     }
 

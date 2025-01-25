@@ -36,11 +36,6 @@ public class RequestLogServiceTest {
     @Mock
     private RequestLogRepository requestLogRepository;
 
-    @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
-
     @Test
     public void getRequestLogsTest() {
         RequestLog log1 = new RequestLog();

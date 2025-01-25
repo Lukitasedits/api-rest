@@ -1,5 +1,6 @@
 package com.lukitasedits.api_rest.controllers;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -33,10 +34,13 @@ import com.lukitasedits.api_rest.repositories.RequestLogRepository;
 import com.lukitasedits.api_rest.services.RateLimiterService;
 import com.lukitasedits.api_rest.services.RedisService;
 
+import lombok.extern.slf4j.Slf4j;
+
 @SpringBootTest(
   webEnvironment = SpringBootTest.WebEnvironment.MOCK,
   classes = ApiRestApplication.class)
 @AutoConfigureMockMvc
+@Slf4j
 class ApiRestControllerTest {
 
     @Autowired
@@ -56,12 +60,14 @@ class ApiRestControllerTest {
 
     @BeforeEach
     void setUp() {
+        log.info("BEFORE EACH");
         rateLimiterService.initRateLimitBucket(3, 3, Duration.ofMinutes(1));
     }
 
     @Test
     void getPercentageTest() throws Exception {
-         when(restTemplate.exchange(Mockito.anyString(), Mockito.any(), Mockito.any(), Mockito.eq(Percentage.class)))
+        assertTrue(true);
+        when(restTemplate.getForEntity(Mockito.nullable(String.class), Mockito.eq(Percentage.class)))
         .thenReturn(new ResponseEntity<Percentage>(new Percentage(23), HttpStatus.OK));
         
         mockMvc.perform(post("/api/percentage")
@@ -74,7 +80,7 @@ class ApiRestControllerTest {
 
     @Test
     void getPercentageRetryTest() throws Exception {
-         when(restTemplate.exchange(Mockito.anyString(), Mockito.any(), Mockito.any(), Mockito.eq(Percentage.class)))
+        when(restTemplate.getForEntity(Mockito.nullable(String.class), Mockito.eq(Percentage.class)))
         .thenThrow(RuntimeException.class);
         when(redisService.getKey("percentage")).thenReturn(23);
         

@@ -40,7 +40,7 @@ public class PercentageServiceTest {
 
     @Test
     void getRandomPercentageTest_Success() {
-        when(restTemplate.exchange(Mockito.nullable(String.class), Mockito.any(), Mockito.any(), Mockito.eq(Percentage.class)))
+        when(restTemplate.getForEntity(Mockito.nullable(String.class), Mockito.eq(Percentage.class)))
         .thenReturn(new ResponseEntity<Percentage>(new Percentage(23), HttpStatus.OK));
         
         Integer percentage = percentageService.getRandomPercentage();
@@ -50,7 +50,7 @@ public class PercentageServiceTest {
 
     @Test
     void getRandomPercentageTest_ExternalServiceFailure() {
-        when(restTemplate.exchange(Mockito.nullable(String.class), Mockito.any(), Mockito.any(), Mockito.eq(Percentage.class)))
+        when(restTemplate.getForEntity(Mockito.nullable(String.class), Mockito.eq(Percentage.class)))
         .thenThrow(new RuntimeException("Test exception"));
         assertThrowsExactly(RuntimeException.class,() -> {
             percentageService.getRandomPercentage();
@@ -59,7 +59,7 @@ public class PercentageServiceTest {
 
     @Test
     void getRandomPercentageTest_ExternalServiceEmptyResponse() {
-        when(restTemplate.exchange(Mockito.nullable(String.class), Mockito.any(), Mockito.any(), Mockito.eq(Percentage.class)))
+        when(restTemplate.getForEntity(Mockito.nullable(String.class), Mockito.eq(Percentage.class)))
         .thenReturn(new ResponseEntity<>(new Percentage(null), HttpStatus.NO_CONTENT));
         
         assertThrowsExactly(EmptyResponseException.class,() -> {

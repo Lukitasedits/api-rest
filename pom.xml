@@ -11,7 +11,7 @@
 	<groupId>com.lukitasedits</groupId>
 	<artifactId>api-rest</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>war</packaging>
+	<packaging>jar</packaging>
 	<name>api-rest</name>
 	<description>Api Rest for Tenpo&apos;s Challenge</description>
 	<url/>

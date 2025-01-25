@@ -1,6 +1,5 @@
 package com.lukitasedits.api_rest.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -13,11 +12,15 @@ import com.lukitasedits.api_rest.models.RequestLog;
 import com.lukitasedits.api_rest.models.Error;
 import com.lukitasedits.api_rest.repositories.RequestLogRepository;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
+@RequiredArgsConstructor
 public class RequestLogService {
 
-    @Autowired
-    private RequestLogRepository requestLogRepository;
+    private final RequestLogRepository requestLogRepository;
 
     private RequestLog currentRequest;
 
@@ -49,7 +52,7 @@ public class RequestLogService {
 
     @Async
     public void closeRequest() {
-        requestLogRepository.save(this.currentRequest);
+        this.currentRequest = requestLogRepository.save(this.currentRequest);
         this.cancelRequest();
     }
 

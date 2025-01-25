@@ -1,9 +1,5 @@
-package com.lukitasedits.api_rest.controllers;
+package com.lukitasedits.api_rest.exceptions;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -14,12 +10,16 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 
 import com.lukitasedits.api_rest.models.Error;
 import com.lukitasedits.api_rest.services.RequestLogService;
-import com.lukitasedits.api_rest.exceptions.ExternalException;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @RestControllerAdvice
+@RequiredArgsConstructor
 public class ControllerAdvice {
-    @Autowired
-    private RequestLogService requestLogService;
+    
+    private final RequestLogService requestLogService;
 
     private ResponseEntity<Error> handleException(String message, HttpStatusCode status) {
         Error error = Error.builder().error(message).build();
@@ -27,7 +27,6 @@ public class ControllerAdvice {
         try {
             if (requestLogService.isRequestOpen()) {
                 requestLogService.updateResponse(response);
-                requestLogService.closeRequest();
             }
         } catch (Exception e) {
             requestLogService.cancelRequest();

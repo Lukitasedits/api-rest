@@ -7,13 +7,14 @@ import org.springframework.context.annotation.Configuration;
 
 import com.lukitasedits.api_rest.services.RateLimiterService;
 import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 
 
 @Configuration
+@RequiredArgsConstructor
 public class RateLimiterConfig {
 	
-	@Autowired
-	public RateLimiterService rateLimiterService;
+	public final RateLimiterService rateLimiterService;
 
 	@PostConstruct
 	public void initRateLimit() {

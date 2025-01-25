@@ -7,7 +7,6 @@ import org.springframework.retry.annotation.EnableRetry;
 
 @SpringBootApplication
 @EnableAspectJAutoProxy(proxyTargetClass = true)
-@EnableRetry
 public class ApiRestApplication {
 
 	public static void main(String[] args) {

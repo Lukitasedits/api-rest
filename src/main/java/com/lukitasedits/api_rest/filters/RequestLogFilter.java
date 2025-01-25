@@ -9,6 +9,8 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
@@ -21,11 +23,12 @@ import com.lukitasedits.api_rest.models.RequestLog;
 import com.lukitasedits.api_rest.services.RequestLogService;
 
 @Component
+@Slf4j
 @Order(3)
+@RequiredArgsConstructor
 public class RequestLogFilter extends OncePerRequestFilter {
 
-    @Autowired
-    private RequestLogService requestLogService;
+    private final RequestLogService requestLogService;
 
     private static final String TARGET_PATH = "/api/percentage";
 

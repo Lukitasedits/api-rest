@@ -22,36 +22,32 @@ import com.lukitasedits.api_rest.exceptions.EmptyResponseException;
 import com.lukitasedits.api_rest.exceptions.ExternalException;
 import com.lukitasedits.api_rest.models.Percentage;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 
 @Service
 @EnableRetry
+@Slf4j
+@RequiredArgsConstructor
 public class PercentageService {
 
     @Value("${spring.external.service.base-url}")
     private String percentageAPIEndPoint;
 
-    @Value("${spring.external.service.key}")
-    private String percentageAPIEndKey;
-
-    @Autowired
-    private RedisService redisService;
+    private final RedisService redisService;
     
-    @Autowired
-    private RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
 
-    // @SuppressWarnings("null")
     @Retryable(value = RuntimeException.class, maxAttempts = 3, backoff = @Backoff(delay = 10000))
     public Integer getRandomPercentage() {
         try {
-            HttpHeaders headers = new HttpHeaders();
-            headers.set("x-api-key",percentageAPIEndKey);
-            
-            HttpEntity<String> entity = new HttpEntity<>(headers);
-
-            ResponseEntity<Percentage> response = restTemplate.exchange(percentageAPIEndPoint, HttpMethod.GET, entity, Percentage.class);
+            log.info("Calling external service: " + percentageAPIEndPoint);
+            ResponseEntity<Percentage> response = restTemplate.getForEntity(percentageAPIEndPoint, Percentage.class);
             Integer percentageVal = 0;
             if (response.hasBody() && response.getBody().getValue() != null) {
                 percentageVal = response.getBody().getValue();
+                log.info("External service responded: " + percentageVal);
                 redisService.setKey("percentage", percentageVal, 30*60);
             } else {
                 throw new EmptyResponseException("No data available.");

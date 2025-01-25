@@ -17,6 +17,4 @@ public interface RequestLogRepository extends PagingAndSortingRepository<Request
     Page<RequestLog> getRequestLogs(Pageable pageable);
 
     RequestLog save(RequestLog requestLog);
-
-    Optional<RequestLog> findById(Long id);
 }

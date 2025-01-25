@@ -49,12 +49,6 @@ public class RequestLogFilterTest {
     @Autowired
     private Environment environment;
 
-    @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
-    
-    
     @Test
     public void doFilterInternalTest_withValidParams() throws IOException, ServletException {
         
