@@ -22,6 +22,7 @@ import com.lukitasedits.api_rest.exceptions.EmptyParamException;
 import com.lukitasedits.api_rest.exceptions.EmptyResponseException;
 import com.lukitasedits.api_rest.exceptions.ExternalException;
 
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -77,10 +78,7 @@ public class PercentageService {
         }
     }
 
-    public Float sumAndAddPercentage(Float num1, Float num2, Integer percentage) {
-        if (num1 == null || num2 == null || percentage == null) {
-            throw new EmptyParamException("One or more params are empty.");
-        } 
+    public Float sumAndAddPercentage(@NonNull Float num1, @NonNull Float num2, @NonNull Integer percentage) {
         return (num1 + num2) * (100 + percentage) / 100;
     }
 }

@@ -36,7 +36,10 @@ public class ExceptionFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
         throws ServletException, IOException, TooManyRequestException {
         try {
+            log.info("Processing request by Exception filter");
+            
             filterChain.doFilter(request, response);
+            log.info("No error");
         } catch (TooManyRequestException e) {
             handleException(response, e.getMessage(), HttpStatus.TOO_MANY_REQUESTS);
         } catch (EmptyResponseException e) {
@@ -51,11 +54,11 @@ public class ExceptionFilter extends OncePerRequestFilter {
     }
 
     private void handleException(HttpServletResponse response, String message, HttpStatusCode status) throws IOException {
+        log.error("handler Error: " + message);
         ErrorDTO error = ErrorDTO.builder().error(message).build();
         try {
             if (requestLogService.isRequestOpen()) {
                 requestLogService.updateResponse(new ResponseEntity<>(error, status));
-                log.info("Closing by exception filter");
                 requestLogService.closeRequest();
             }
         } catch (Exception e) {

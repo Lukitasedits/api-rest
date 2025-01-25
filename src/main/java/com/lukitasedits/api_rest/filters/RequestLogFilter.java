@@ -34,9 +34,11 @@ public class RequestLogFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws RuntimeException, IOException, ServletException {
-
+        log.info("Processing request by RequestLog filter");
         String path = request.getPathInfo() != null ? request.getPathInfo() : request.getServletPath();
+        log.info("path is" + path);
         if (path != null && path.startsWith(TARGET_PATH)) {
+            
             LocalDateTime requestTime = LocalDateTime.now();
             String endpoint = request.getRequestURL().toString();
             Map<String, Float> params = new HashMap<>();
@@ -49,10 +51,11 @@ public class RequestLogFilter extends OncePerRequestFilter {
                 });
             } catch (NumberFormatException e) {
                 throw new BadParamException("Invalid parameter: " + e.getMessage());
+            } finally {
+                RequestLog requestLog = new RequestLog(requestTime, endpoint, params);
+                requestLogService.openRequest(requestLog);
             }
             
-            RequestLog requestLog = new RequestLog(requestTime, endpoint, params);
-            requestLogService.openRequest(requestLog);
 
             try {
                 filterChain.doFilter(request, response);

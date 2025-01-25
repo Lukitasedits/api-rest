@@ -8,16 +8,18 @@ import com.lukitasedits.api_rest.entities.RequestLog;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@Slf4j
 public class RequestLogDTO {
     private Long id;
     private LocalDateTime requestTime;
     private String endpoint;
     private Map<String, Float> params;
-    private Object response;
+    private String response;
 
      public static RequestLogDTO fromEntity(RequestLog entity) {
         return new RequestLogDTO(
@@ -25,7 +27,7 @@ public class RequestLogDTO {
             entity.getRequestTime(),
             entity.getEndpoint(),
             entity.getParams(),
-            entity.getResponse()
+            entity.getResponseJson()
         );
     }
 }

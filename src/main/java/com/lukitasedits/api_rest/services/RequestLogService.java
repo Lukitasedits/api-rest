@@ -13,6 +13,7 @@ import com.lukitasedits.api_rest.entities.RequestLog;
 import com.lukitasedits.api_rest.exceptions.EmptyResponseException;
 import com.lukitasedits.api_rest.repositories.RequestLogRepository;
 
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,6 +27,7 @@ public class RequestLogService {
     private RequestLog currentRequest;
 
     public boolean isRequestOpen () {
+        log.info("Checking if request is open" + currentRequest);
         return currentRequest != null;
     }
 
@@ -37,13 +39,15 @@ public class RequestLogService {
     }
 
     public void openRequest (RequestLog requestLog) {
+        log.info("Opening request" + requestLog.toString());
         if (isRequestOpen()) {
             throw new RuntimeException("Another request is open");
         }
         this.currentRequest  = requestLog;
     }
 
-    public void updateResponse (ResponseEntity<?> response) {
+    public void updateResponse (@NonNull ResponseEntity<?> response) {
+        log.info("Updating response" + response.toString());
         Object body = response.getBody();
         switch (body) {
             case null -> throw new EmptyResponseException("Response body is null");
@@ -55,6 +59,7 @@ public class RequestLogService {
 
     @Async
     public void closeRequest() {
+        log.info("Closing request" + this.currentRequest.toString());
         this.currentRequest = requestLogRepository.save(this.currentRequest);
         this.cancelRequest();
     }

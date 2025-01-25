@@ -90,9 +90,25 @@ public class PercentageServiceTest {
     }
 
     @Test
-    void sumAndAddPercentageTest() {
+    void sumAndAddPercentageTest_Success() {
         Float result = percentageService.sumAndAddPercentage(32.1f, 45.12f, 50);
         //32.1 + 45.12 + 50% = 77.22 + 38.61 = 115.83
         assertEquals(115.83f, result.floatValue(), 0.001);
+    }
+
+    @Test
+    void sumAndAddPercentageTest_Failure() {
+
+        assertThrowsExactly(NullPointerException.class,() -> {
+            percentageService.sumAndAddPercentage(null, 45.12f, 50);
+        });
+
+        assertThrowsExactly(NullPointerException.class,() -> {
+            percentageService.sumAndAddPercentage(32.1f, null, 50);
+        });
+
+        assertThrowsExactly(NullPointerException.class,() -> {
+            percentageService.sumAndAddPercentage(32.1f, 45.12f, null);
+        });
     }
 }
