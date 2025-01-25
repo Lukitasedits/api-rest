@@ -12,6 +12,9 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 
+import org.aspectj.lang.annotation.After;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -23,10 +26,18 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.client.RestTemplate;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.utility.DockerImageName;
 
+import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.lukitasedits.api_rest.ApiRestApplication;
 import com.lukitasedits.api_rest.models.Percentage;
 import com.lukitasedits.api_rest.models.RequestLog;
@@ -48,6 +59,47 @@ class ApiRestControllerTest {
 
     @Autowired
     private RateLimiterService rateLimiterService;
+
+    static PostgreSQLContainer<?> postgreContainer = new PostgreSQLContainer<>("postgres:15")
+            .withUsername("test")
+            .withPassword("1234")
+            .withDatabaseName("test")
+            .withExposedPorts(5432);
+    static GenericContainer<?> redis = new GenericContainer<>(DockerImageName.parse("redis:7")).withExposedPorts(6379);
+
+
+    static WireMockServer wireMockServer = new WireMockServer(WireMockConfiguration.wireMockConfig().dynamicPort());
+
+
+    @DynamicPropertySource
+    static void configureProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", postgreContainer::getJdbcUrl);
+        registry.add("spring.datasource.username", postgreContainer::getUsername);
+        registry.add("spring.datasource.password", postgreContainer::getPassword);
+        registry.add("spring.data.redis.host", redis::getHost);
+        registry.add("spring.data.redis.port", () -> redis.getMappedPort(6379));
+        registry.add("spring.external.service.base-url", () -> wireMockServer.baseUrl());
+    }
+
+    @BeforeAll
+    static void beforeAll() {
+        postgreContainer.start();
+        redis.start();
+        wireMockServer.start();
+
+        wireMockServer.stubFor(WireMock.get("/api/v1/percentage")
+                .willReturn(WireMock.aResponse()
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("{\"value\": 23}")
+                        .withStatus(200)));
+    }
+
+    @AfterAll
+    static void afterAll() {
+        postgreContainer.stop();
+        redis.stop();
+        wireMockServer.stop();
+    }
 
     @MockitoBean
     private RequestLogRepository requestLogRepository;
@@ -112,7 +164,7 @@ class ApiRestControllerTest {
 
     @Test
     void rateLimitTest() throws Exception {
-         when(restTemplate.exchange(Mockito.anyString(), Mockito.any(), Mockito.any(), Mockito.eq(Percentage.class)))
+        when(restTemplate.getForEntity(Mockito.nullable(String.class), Mockito.eq(Percentage.class)))
         .thenReturn(new ResponseEntity<Percentage>(new Percentage(23), HttpStatus.OK));
         
         for (int i = 0; i < 3; i++) {
