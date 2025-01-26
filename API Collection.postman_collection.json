@@ -1,0 +1,71 @@
+{
+	"info": {
+		"_postman_id": "169bdfe9-9ada-42d7-9c1c-0ade59d6810e",
+		"name": "Overview: API Collection",
+		"description": "This Postman collection includes two exposed endpoints that provide functionality for percentage-based calculations and logging request data.\n\n### **1\\. Percentage Calculation Endpoint**\n\n- **URL:** `http://localhost:8085/api/percentage`\n    \n- **Method:** `POST`\n    \n- **Parameters:**\n    \n    - `num1`: First number.\n        \n    - `num2`: Second number.\n        \n- **Functionality:**  \n    This endpoint receives two numbers, calculates their sum, and applies a fixed percentage obtained from an external service. The response returns the sum plus the calculated percentage.\n    \n\n### **2\\. Request Log Endpoint**\n\n- **URL:** `http://localhost:8085/api/log`\n    \n- **Method:** `GET`\n    \n- **Parameters:**\n    \n    - `size`: Number of records per page.\n        \n    - `page`: Page index for pagination.\n        \n- **Functionality:**  \n    This endpoint retrieves paginated logs of previous requests made to the percentage calculation endpoint, allowing for request tracking and analysis.\n    \n\nThis collection is useful for testing percentage-based computations and monitoring request logs efficiently.\n\nEndFragment",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "18841252"
+	},
+	"item": [
+		{
+			"name": "Sum and add",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8085/api/percentage?num1=23&num2=4.5",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8085",
+					"path": [
+						"api",
+						"percentage"
+					],
+					"query": [
+						{
+							"key": "num1",
+							"value": "23"
+						},
+						{
+							"key": "num2",
+							"value": "4.5"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Request log",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8085/api/log?size=23&page=15",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8085",
+					"path": [
+						"api",
+						"log"
+					],
+					"query": [
+						{
+							"key": "size",
+							"value": "23"
+						},
+						{
+							"key": "page",
+							"value": "15"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

@@ -29,7 +29,7 @@ public class ApiRestController {
 
     @PostMapping("/percentage")
     public ResponseEntity<Float> getPercentage(@RequestParam("num1") Float num1, @RequestParam("num2") Float num2) {
-        Integer percentage = percentageService.getRandomPercentage();
+        Integer percentage = percentageService.getPercentage();
         Float value = percentageService.sumAndAddPercentage(num1, num2, percentage);
 
         ResponseEntity<Float> response = new ResponseEntity<>(value, HttpStatus.OK);

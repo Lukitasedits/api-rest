@@ -36,31 +36,31 @@ public class PercentageServiceTest {
     private RedisService redisService;
 
     @Test
-    void getRandomPercentageTest_Success() {
+    void getPercentageTest_Success() {
         when(restTemplate.getForEntity(Mockito.nullable(String.class), Mockito.eq(PercentageDTO.class)))
         .thenReturn(new ResponseEntity<PercentageDTO>(new PercentageDTO(23), HttpStatus.OK));
         
-        Integer percentage = percentageService.getRandomPercentage();
+        Integer percentage = percentageService.getPercentage();
         assertEquals(23, percentage.intValue());
         verify(redisService).setKey("percentage", 23, 30*60);
     }
 
     @Test
-    void getRandomPercentageTest_ExternalServiceFailure() {
+    void getPercentageTest_ExternalServiceFailure() {
         when(restTemplate.getForEntity(Mockito.nullable(String.class), Mockito.eq(PercentageDTO.class)))
         .thenThrow(new RuntimeException("Test exception"));
         assertThrowsExactly(RuntimeException.class,() -> {
-            percentageService.getRandomPercentage();
+            percentageService.getPercentage();
         });
     }
 
     @Test
-    void getRandomPercentageTest_ExternalServiceEmptyResponse() {
+    void getPercentageTest_ExternalServiceEmptyResponse() {
         when(restTemplate.getForEntity(Mockito.nullable(String.class), Mockito.eq(PercentageDTO.class)))
         .thenReturn(new ResponseEntity<>(new PercentageDTO(null), HttpStatus.NO_CONTENT));
         
         assertThrowsExactly(EmptyResponseException.class,() -> {
-            percentageService.getRandomPercentage();
+            percentageService.getPercentage();
         });
     }
     

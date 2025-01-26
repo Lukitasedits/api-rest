@@ -3,6 +3,7 @@ package com.lukitasedits.api_rest.exceptions;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -37,7 +38,7 @@ public class ControllerAdvice {
     }
 
     @ExceptionHandler(value = ExternalException.class)
-    public ResponseEntity<ErrorDTO> externalExceptionHandler(ExternalException e) {
+    public ResponseEntity<ErrorDTO> handleExternalException(ExternalException e) {
         return handleException(e.getMessage(), e.getStatusCode());
     }
 
@@ -49,5 +50,10 @@ public class ControllerAdvice {
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<ErrorDTO> handleNotFound(NoHandlerFoundException e) {
         return handleException(e.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ErrorDTO> handleMethodNotAllowed(HttpRequestMethodNotSupportedException e) {
+        return handleException(e.getMessage(), HttpStatus.METHOD_NOT_ALLOWED);
     }
 }

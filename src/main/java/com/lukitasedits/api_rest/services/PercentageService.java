@@ -18,7 +18,6 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.lukitasedits.api_rest.dto.PercentageDTO;
-import com.lukitasedits.api_rest.exceptions.EmptyParamException;
 import com.lukitasedits.api_rest.exceptions.EmptyResponseException;
 import com.lukitasedits.api_rest.exceptions.ExternalException;
 
@@ -41,7 +40,7 @@ public class PercentageService {
     private final RestTemplate restTemplate;
 
     @Retryable(value = RuntimeException.class, maxAttempts = 3, backoff = @Backoff(delay = 10000))
-    public Integer getRandomPercentage() {
+    public Integer getPercentage() {
         try {
             log.info("Calling external service: " + percentageAPIEndPoint);
             ResponseEntity<PercentageDTO> response = restTemplate.getForEntity(percentageAPIEndPoint, PercentageDTO.class);
