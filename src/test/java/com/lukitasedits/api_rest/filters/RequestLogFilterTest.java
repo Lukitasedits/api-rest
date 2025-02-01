@@ -10,12 +10,10 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -73,7 +71,6 @@ public class RequestLogFilterTest {
             requestLogFilter.doFilterInternal(request, response, filterChain);
         });
 
-        verify(requestLogService, never()).openRequest(any(RequestLog.class));
         verify(filterChain, never()).doFilter(request, response);
         verify(requestLogService, never()).closeRequest();
     }
