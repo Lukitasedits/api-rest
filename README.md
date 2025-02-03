@@ -8,8 +8,9 @@ El objetivo de esta aplicación es  construir una API REST robusta utilizando Sp
 Para la automatización del levantamiento de las distintas tecnologías utilizadas para la realización de este proyecto (Spring boot, Redis y PostgreSQL), se utilizó Docker compose.
 Para el levantamiento de este proyecto se debe ejecutar el siguiente comando:
 
+```
 docker-compose up --build -d
-
+```
 
 Para ejecutar esta instrucción, es necesario estar en la raíz del proyecto. Esta acción genera una nueva imagen que contiene el código de la aplicación, inicia un contenedor basado en dicha imagen y, de manera similar, levanta los servicios de PostgreSQL, Redis y el servicio externo correspondiente.
 
