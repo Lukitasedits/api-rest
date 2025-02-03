@@ -10,6 +10,15 @@ Para el levantamiento de este proyecto se debe ejecutar el siguiente comando:
 
 docker-compose up --build -d
 
+
+Para ejecutar esta instrucción, es necesario estar en la raíz del proyecto. Esta acción genera una nueva imagen que contiene el código de la aplicación, inicia un contenedor basado en dicha imagen y, de manera similar, levanta los servicios de PostgreSQL, Redis y el servicio externo correspondiente.
+
+Es importante destacar que la aplicación no funcionará correctamente si se intenta ejecutar directamente desde el método Main, ya que las propiedades de configuración están definidas para apuntar exclusivamente a las instancias dockerizadas de PostgreSQL, Redis y el servicio mock (encargado de proporcionar el porcentaje). Debido a esta configuración, la conexión no se establecerá correctamente fuera del entorno de Docker.
+
+Para abordar esta limitación y garantizar la ejecución de pruebas de integración de forma independiente de Docker, se decidió utilizar Testcontainers. Esta solución permite realizar pruebas en un entorno controlado sin necesidad de depender de la infraestructura del contenedor principal.
+
+
+
 # Componentes
 
 ## Controladores
